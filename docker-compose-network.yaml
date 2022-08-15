@@ -1,0 +1,9 @@
+---
+version: "3.6"
+
+networks:
+  mynetwork.com:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.239.0/24

@@ -1,0 +1,47 @@
+---
+version: "3.6"
+
+networks:
+  mynetwork.com:
+    external: true
+
+x-besu-bootnode-def: &besu-bootnode-def
+  restart: "on-failure"
+  image: hyperledger/besu:${BESU_VERSION:-latest}
+  entrypoint:
+    - /bin/bash
+    - -c
+    - |
+      /opt/besu/bin/besu \
+      --config-file=/config/config.toml \
+      --p2p-host=$$(hostname -i) \
+      --genesis-file=/config/genesis.json \
+      --node-private-key-file=/opt/besu/keys/key \
+      --min-gas-price=0 \
+      --rpc-http-api=ETH,NET,IBFT
+
+services:
+  node5:
+    <<: *besu-bootnode-def
+    container_name: node5.newOrgNodes.com
+    hostname: node5.newOrgNodes.com
+    volumes:
+      - ./configNew/config-besuNew.toml:/config/config.toml
+      - ./configNew/genesis-besuNew.json:/config/genesis.json
+      - ./configNew/networkFilesNew/node5/keys:/opt/besu/keys
+    networks:
+      mynetwork.com:
+        ipv4_address: 172.16.239.15
+
+  node6:
+    <<: *besu-bootnode-def
+    container_name: node6.newOrgNodes.com
+    hostname: node6.newOrgNodes.com
+    volumes:
+      - ./configNew/config-besuNew.toml:/config/config.toml
+      - ./configNew/genesis-besuNew.json:/config/genesis.json
+      - ./configNew/networkFilesNew/node6/keys:/opt/besu/keys
+    networks:
+      mynetwork.com:
+        ipv4_address: 172.16.239.16
+

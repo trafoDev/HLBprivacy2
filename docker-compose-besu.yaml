@@ -1,0 +1,75 @@
+---
+version: "3.6"
+
+networks:
+  mynetwork.com:
+    external: true
+
+x-besu-bootnode-def: &besu-bootnode-def
+  restart: "on-failure"
+  image: hyperledger/besu:${BESU_VERSION:-latest}
+  entrypoint:
+    - /bin/bash
+    - -c
+    - |
+      /opt/besu/bin/besu \
+      --config-file=/config/config.toml \
+      --p2p-host=$$(hostname -i) \
+      --genesis-file=/config/genesis.json \
+      --node-private-key-file=/opt/besu/keys/key \
+      --min-gas-price=0 \
+      --rpc-http-api=ETH,NET,IBFT
+
+services:
+  node1:
+    <<: *besu-bootnode-def
+    container_name: node1.mynetwork.com
+    hostname: node1.mynetwork.com
+    volumes:
+##      - public-keys:/tmp/
+      - ./config/config-besu.toml:/config/config.toml
+      - ./config/genesis-besu.json:/config/genesis.json
+      - ./config/networkFiles/node1/keys:/opt/besu/keys
+    networks:
+      mynetwork.com:
+        ipv4_address: 172.16.239.11
+
+  node2:
+    <<: *besu-bootnode-def
+    container_name: node2.mynetwork.com
+    hostname: node2.mynetwork.com
+    volumes:
+##      - public-keys:/tmp/
+      - ./config/config-besu.toml:/config/config.toml
+      - ./config/genesis-besu.json:/config/genesis.json
+      - ./config/networkFiles/node2/keys:/opt/besu/keys
+    networks:
+      mynetwork.com:
+        ipv4_address: 172.16.239.12
+
+  node3:
+    <<: *besu-bootnode-def
+    container_name: node3.mynetwork.com
+    hostname: node3.mynetwork.com
+    volumes:
+##      - public-keys:/tmp/
+      - ./config/config-besu.toml:/config/config.toml
+      - ./config/genesis-besu.json:/config/genesis.json
+      - ./config/networkFiles/node3/keys:/opt/besu/keys
+    networks:
+      mynetwork.com:
+        ipv4_address: 172.16.239.13
+
+  node4:
+    <<: *besu-bootnode-def
+    container_name: node4.mynetwork.com
+    hostname: node4.mynetwork.com
+    volumes:
+##      - public-keys:/tmp/
+      - ./config/config-besu.toml:/config/config.toml
+      - ./config/genesis-besu.json:/config/genesis.json
+      - ./config/networkFiles/node4/keys:/opt/besu/keys
+    networks:
+      mynetwork.com:
+        ipv4_address: 172.16.239.14
+
